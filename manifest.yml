@@ -1,6 +1,4 @@
 applications:
 - name: super-fizz
   memory: 128M
-  domain: mybluemix.net
-  host: super-fizz
   disk_quota: 500M

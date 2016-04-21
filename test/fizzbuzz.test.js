@@ -41,8 +41,8 @@ describe("Fizzbuzz", function () {
 		
 		it("applies FizzBuzz to every number in the range", function() {
 			var spy = sinon.spy(f, "convertToFizzBuzz");
-			f.convertRangeToFizzBuzz(1, 50);
-			for (var i = 1; i <= 50; i++) {
+			f.convertRangeToFizzBuzz("9", "50");
+			for (var i = 9; i <= 50; i++) {
 				expect(spy.withArgs(i).calledOnce).to.be.eql(true, "Expected convertToFizzBuzz to be called with " + i);
 			}
 			f.convertToFizzBuzz.restore();
