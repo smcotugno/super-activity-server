@@ -1,4 +1,9 @@
+<<<<<<< HEAD
+launchConfigurations/
+.git/
+=======
 launchConfigurations/
 .git/
 node_modules/
 npm-debug.log
+>>>>>>> 8cd16ab8274a8be62043cfc311c63c4f300f055e
