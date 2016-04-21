@@ -1,0 +1,19 @@
+{
+  "name": "super-fizz",
+  "version": "0.0.0",
+  "description": "REST API to calculate FizzBuzz value for a given number range",
+  "main": "server.js",
+  "scripts": {
+    "test": "node_modules/.bin/mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://hub.jazz.net/git/dbellagio/super-fizz"
+  },
+  "author": "Dave Bellagio",
+  "license": "ISC",
+  "devDependencies": {
+    "mocha": "^2.4.5",
+    "mocha-jshint": "^2.3.1"
+  }
+}
