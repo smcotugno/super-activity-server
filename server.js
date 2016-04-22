@@ -21,5 +21,5 @@ var server_host = process.env.VCAP_APP_HOST || "localhost";
 var server = app.listen(server_port, server_host, function () {
 	var host = server.address().address;
 	var port = server.address().port;
-	console.log("Example app listening at http://%s:%s", host, port);
+	console.log("super-fizz app listening at http://%s:%s", host, port);
 });
