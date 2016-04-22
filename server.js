@@ -15,6 +15,14 @@ app.get("/fizzbuzz_range/:from/:to", function(req, res) {
 	});
 });
 
+app.get("/", function(req, res) {
+
+	res.send({
+		result: "super-fizz is running"
+	});
+});
+
+
 var server_port = process.env.VCAP_APP_PORT || 3000;
 var server_host = process.env.VCAP_APP_HOST || "localhost";
 
