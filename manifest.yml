@@ -1,4 +1,7 @@
 applications:
-- name: super-fizz
-  memory: 128M
-  disk_quota: 500M
+- name: super-activity-server
+  host: super-activity-server
+  memory: 512M
+  disk_quota: 512M
+  services: 
+   - super-activities-cloudant-dev

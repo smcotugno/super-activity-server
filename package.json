@@ -1,14 +1,14 @@
 {
-  "name": "super-fizz",
+  "name": "super-activity-server",
   "version": "0.0.0",
-  "description": "REST API to calculate FizzBuzz value for a given number range",
+  "description": "REST API to return activities",
   "main": "server.js",
   "scripts": {
     "test": "node_modules/.bin/mocha"
   },
   "repository": {
     "type": "git",
-    "url": "https://hub.jazz.net/git/dbellagio/super-fizz"
+    "url": "https://hub.jazz.net/git/dbellagio/super-activity-server"
   },
   "author": "Dave Bellagio",
   "license": "ISC",
@@ -20,6 +20,7 @@
     "sinon-chai": "^2.8.0"
   },
   "dependencies": {
-    "express": "^4.13.4"
+    "cloudant": "^1.4.2",
+    "express": "^4.14.0"
   }
 }
