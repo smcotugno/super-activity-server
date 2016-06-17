@@ -4,6 +4,7 @@ const express = require('express');
 const app = express();
 //const appEnv = cfenv.getAppEnv();
 
+var cors = require('cors');
 var cloudant;
 var db;
 
@@ -63,7 +64,23 @@ function initDBConnection() {
 	}		
 }
 
-app.get("/api/activities", function(req, res) {
+
+var whitelist = ['https://super-activities-dev.mybluemix.net', 'http://super-activities-dev.mybluemix.net', 'http://localhost:4500'];
+
+var corsOptionsDelegate = function(req, callback){
+	  var corsOptions;
+	  if(whitelist.indexOf(req.header('Origin')) !== -1){
+	    corsOptions = { origin: true }; // reflect (enable) the requested origin in the CORS response
+		console.log('setting origin to true');
+	  }else{
+	    corsOptions = { origin: false }; // disable CORS for this request
+		console.log('setting origin to false');
+	  }
+	  callback(null, corsOptions); // callback expects two parameters: error and options
+	};
+	
+	
+app.get("/api/activities", cors(corsOptionsDelegate), function(req, res) {
 
 	var responseData = { 
 			total_rows: 3,
