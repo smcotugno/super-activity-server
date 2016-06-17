@@ -5,6 +5,10 @@ const app = express();
 //const appEnv = cfenv.getAppEnv();
 
 var cors = require('cors');
+
+// uncomment this to allow all CORS domains
+//app.use(cors());
+
 var cloudant;
 var db;
 
@@ -34,9 +38,9 @@ function initDBConnection() {
 				cloudant = require('cloudant')(dbCredentials.url);
 				
 				// check if DB exists if not create
-				cloudant.db.create(dbCredentials.dbName, function (err, res) {
-					if (err) { console.log('could not create db ', err); }
-				});
+//				cloudant.db.create(dbCredentials.dbName, function (err, res) {
+//					if (err) { console.log('could not create db ', err); }
+//				});
 				
 				db = cloudant.use(dbCredentials.dbName);
 //				console.log('using cloudant database ', dbCredentials.dbName);
@@ -67,20 +71,15 @@ function initDBConnection() {
 
 var whitelist = ['https://super-activities-dev.mybluemix.net', 'http://super-activities-dev.mybluemix.net', 'http://localhost:4500'];
 
-var corsOptionsDelegate = function(req, callback){
-	  var corsOptions;
-	  if(whitelist.indexOf(req.header('Origin')) !== -1){
-	    corsOptions = { origin: true }; // reflect (enable) the requested origin in the CORS response
-		console.log('setting origin to true');
-	  }else{
-	    corsOptions = { origin: false }; // disable CORS for this request
-		console.log('setting origin to false');
-	  }
-	  callback(null, corsOptions); // callback expects two parameters: error and options
-	};
 	
+var corsOptions = {
+		 origin: function(origin, callback){
+			    var originIsWhitelisted = whitelist.indexOf(origin) !== -1;
+			    callback(null, originIsWhitelisted);
+		 }
+};
 	
-app.get("/api/activities", cors(corsOptionsDelegate), function(req, res) {
+app.get("/api/activities", cors(corsOptions), function(req, res, next) {
 
 	var responseData = { 
 			total_rows: 3,
