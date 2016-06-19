@@ -71,7 +71,18 @@ function initDBConnection() {
 
 var whitelist = ['https://super-activities-dev.mybluemix.net', 'http://super-activities-dev.mybluemix.net', 'http://localhost:4500'];
 
+// Asynchronous CORS	
+var corsOptionsDelegate = function(req, callback){
+	  var corsOptions;
+	  if(whitelist.indexOf(req.header('Origin')) !== -1){
+	    corsOptions = { origin: true }; // reflect (enable) the requested origin in the CORS response 
+	  }else{
+	    corsOptions = { origin: false }; // disable CORS for this request 
+	  }
+	  callback(null, corsOptions); // callback expects two parameters: error and options 
+};
 	
+// Dynamic CORS	
 var corsOptions = {
 		 origin: function(origin, callback){
 			    var originIsWhitelisted = whitelist.indexOf(origin) !== -1;
@@ -79,8 +90,9 @@ var corsOptions = {
 		 }
 };
 	
-app.get("/api/activities", cors(corsOptions), function(req, res, next) {
-
+app.get("/api/activities", cors(corsOptionsDelegate), function(req, res, next) {
+// app.get("/api/activities", cors(corsOptions), function(req, res, next) {
+	 
 	var responseData = { 
 			total_rows: 3,
 			offset:0,
