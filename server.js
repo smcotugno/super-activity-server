@@ -65,6 +65,8 @@ function initDBConnection() {
 		dbCredentials.user = "ed939949-f653-4827-80d7-b337bff5fdbc-bluemix";
 		dbCredentials.password = "39ed55d43de58e4027705af1b65c1f30e5039e3a41a930655f3498ec382a6586";
 		dbCredentials.url = "https://ed939949-f653-4827-80d7-b337bff5fdbc-bluemix:39ed55d43de58e4027705af1b65c1f30e5039e3a41a930655f3498ec382a6586@ed939949-f653-4827-80d7-b337bff5fdbc-bluemix.cloudant.com";
+		cloudant = require('cloudant')(dbCredentials.url);
+		db = cloudant.use(dbCredentials.dbName);
 	}		
 }
 
@@ -92,7 +94,8 @@ var corsOptions = {
 	
 app.get("/api/activities", cors(corsOptionsDelegate), function(req, res, next) {
 // app.get("/api/activities", cors(corsOptions), function(req, res, next) {
-	 
+
+	/*
 	var responseData = { 
 			total_rows: 3,
 			offset:0,
@@ -114,8 +117,51 @@ app.get("/api/activities", cors(corsOptionsDelegate), function(req, res, next) {
 			    },			    
 			]
 	}
+	*/
+	var responseData = {};
+	// Initialize to blank
+	responseData.total_rows = 0;
+	responseData.offset = 0;
+	responseData.rows = [];
 	
-	res.send(responseData);
+	console.log("Get method invoked.. ")
+	
+	db = cloudant.use(dbCredentials.dbName);
+//	var docList = [];
+	var i = 0;
+	db.list(function(err, body) {
+		if (!err) {
+			var len = body.rows.length;
+			console.log('total # of docs -> '+len);
+			if (len == 0) {
+				// send empty response back
+			} else {
+				// we have rows back
+				responseData.total_rows = len;
+				responseData.offset = 0;
+				body.rows.forEach(function(document) {
+					// get the document
+					db.get(document.id, { revs_info: true }, function(err, doc) {
+						if (!err) {
+							responseData.rows.push({});
+							responseData.rows[i].id = doc._id;
+							responseData.rows[i].description = doc.description;
+							responseData.rows[i].points = doc.points;
+							i++;
+							if(i >= len) {
+								console.log('ending response...');
+								res.send(responseData);
+							}
+						} else {
+							console.log(err);
+						}
+					});			
+				});
+			}		
+		} else {
+			console.log(err);
+		}
+	});
 });
 
 app.get("/", function(req, res) {
