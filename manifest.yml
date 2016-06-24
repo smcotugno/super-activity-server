@@ -1,8 +1,10 @@
 applications:
 - name: super-activity-server
   host: super-activity-server
+  domain: mybluemix.net
   memory: 128M
   disk_quota: 128M
+  instances: 3
   services: 
    - super-activities-cloudant-dev
    - super-activities-cloudant-eu-gb-dev

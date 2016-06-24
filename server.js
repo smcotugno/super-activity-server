@@ -80,11 +80,11 @@ function initDBConnection() {
 		// Bluemix service.
 		
 		// from the DEV creds
-		dbCredentials.host = "ed939949-f653-4827-80d7-b337bff5fdbc-bluemix.cloudant.com";
+		dbCredentials.host = "7e7c529c-4cd4-4ea7-94df-b106120c45c2-bluemix.cloudant.com";
 		dbCredentials.port = 443;
-		dbCredentials.user = "ed939949-f653-4827-80d7-b337bff5fdbc-bluemix";
-		dbCredentials.password = "39ed55d43de58e4027705af1b65c1f30e5039e3a41a930655f3498ec382a6586";
-		dbCredentials.url = "https://ed939949-f653-4827-80d7-b337bff5fdbc-bluemix:39ed55d43de58e4027705af1b65c1f30e5039e3a41a930655f3498ec382a6586@ed939949-f653-4827-80d7-b337bff5fdbc-bluemix.cloudant.com";
+		dbCredentials.user = "7e7c529c-4cd4-4ea7-94df-b106120c45c2-bluemix";
+		dbCredentials.password = "080eabbb75c2d4b7554ee6ce01e49c8f0bbac6ad806449c8d686bff9b1298578";
+		dbCredentials.url = "https://7e7c529c-4cd4-4ea7-94df-b106120c45c2-bluemix:080eabbb75c2d4b7554ee6ce01e49c8f0bbac6ad806449c8d686bff9b1298578@7e7c529c-4cd4-4ea7-94df-b106120c45c2-bluemix.cloudant.com";
 		cloudant = require('cloudant')(dbCredentials.url);
 		db = cloudant.use(dbCredentials.dbName);
 	}		
