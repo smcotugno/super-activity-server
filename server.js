@@ -187,6 +187,17 @@ app.get("/api/activities", cors(corsOptionsDelegate), function(req, res, next) {
 	});
 });
 
+app.get("/config", function(req, res) {
+
+	if (process.env.VCAP_APPLICATION) {
+		res.send(process.env.VCAP_APPLICATION);		
+	} else {
+		res.send({
+			result: "No VCAP_APPLICATION provided, must be running local"
+		});
+	}
+});
+
 app.get("/", function(req, res) {
 
 	const imAliveMessage = "This is the super-activity-server running against Cloudant service: " + dbCredentials.serviceNameInUse;
