@@ -13,7 +13,8 @@ var cloudant;
 var db;
 
 var dbCredentials = {
-		dbName : 'super-activities-db'
+		dbName : 'super-activities-db',
+		serviceNameInUse : 'No service instance defined'
 	};
 
 var lastCredsUsed = '';
@@ -45,6 +46,7 @@ function initDBConnection() {
 				
 				db = cloudant.use(dbCredentials.dbName);
 //				console.log('using cloudant database ', dbCredentials.dbName);
+				dbCredentials.serviceNameInUse = vcapServices[vcapService][0].name;
 				console.log('using cloudant database from service ', vcapServices[vcapService][0].name);
 				break;
 			} else if (vcapService.match(/user-provided/i)){
@@ -64,7 +66,8 @@ function initDBConnection() {
 				
 				db = cloudant.use(dbCredentials.dbName);
 //				console.log('using cloudant database ', dbCredentials.dbName);
-				console.log('using cloudant database from service ', vcapServices[vcapService][0].name);
+				dbCredentials.serviceNameInUse = vcapServices[vcapService][0].name;
+				console.log('using cloudant database from replica service: ', vcapServices[vcapService][0].name);
 				break;
 			}
 		}
@@ -72,7 +75,7 @@ function initDBConnection() {
 			console.warn('Could not find Cloudant credentials in VCAP_SERVICES environment variable - data will be unavailable to the UI');
 		}
 	} else {
-		console.warn('VCAP_SERVICES environment variable not set - only development data will be available to the UI');
+		console.warn('VCAP_SERVICES environment variable not set - only development data will be available to the UI from US replica');
 		// For running this app locally you can get your Cloudant credentials 
 		// from Bluemix (VCAP_SERVICES in "cf env" output or the Environment 
 		// Variables section for an app in the Bluemix console dashboard).
@@ -186,8 +189,9 @@ app.get("/api/activities", cors(corsOptionsDelegate), function(req, res, next) {
 
 app.get("/", function(req, res) {
 
+	const imAliveMessage = "This is the super-activity-server running against Cloudant service: " + dbCredentials.serviceNameInUse;
 	res.send({
-		result: "This is the super-activity-server"
+		result: imAliveMessage
 	});
 });
 
