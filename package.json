@@ -20,7 +20,6 @@
     "sinon-chai": "^2.8.0"
   },
   "dependencies": {
-    "bluemix-secure-gateway": "^3.0.2",
     "cloudant": "^1.4.2",
     "cors": "^2.7.1",
     "express": "^4.14.0",
