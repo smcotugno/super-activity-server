@@ -8,3 +8,4 @@ applications:
   services: 
    - super-activities-cloudant-dev
    - super-activities-cloudant-eu-gb-dev
+   - super-mq-light
