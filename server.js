@@ -80,7 +80,7 @@ var dbCredentials = {
 var lastCredsUsed = '';
 
 var savedRes;
-var savedResponseData;
+var savedResponseData = {};
 var savedI;
 
 function initDBConnection() {
@@ -235,7 +235,7 @@ app.get("/api/activities", cors(corsOptionsDelegate), function(req, res, next) {
 							responseData.rows[i].points = doc.points;
 							i++;
 							if(i >= len) {
-								console.log('ending response...');
+								console.log('Start to talk to backend...' + mqlightClient.id);
 								// Talk to back end here, or, set flag that one is done and check for both down
 							    var msgData = {
 							    	"message" : "This is a message from the Activity Server",
@@ -296,8 +296,14 @@ function processBackendMessage(data, delivery) {
 			savedResponseData.rows[savedI].id = "Backend Work";
 			savedResponseData.rows[savedI].description = "Work from activity backend server";
 			savedResponseData.rows[savedI].points = 100;
-			msg.delivery.message.confirmDelivery();
-			savedRes.send(savedResponseData);			
+//			msg.delivery.message.confirmDelivery();
+			delivery.message.confirmDelivery();
+			console.log('ending initial request response...' + mqlightClient.id);
+			savedRes.send(savedResponseData);	
+			// clear saved
+			savedI = 0;
+			savedRes = '';
+			saveResponseData = {};		
 	  } else {
 		  // not my message to send back
 		  console.log("Not my message: " + mqlightClient.id);
