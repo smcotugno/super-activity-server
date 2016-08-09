@@ -1,3 +1,63 @@
+
+// this is where I listen for junk to process
+var SUBSCRIBE_TOPIC = "activity/backend/output";
+	
+// this is where I publish my data to
+var PUBLISH_TOPIC = "activity/server/output";
+
+var SHARE_ID = "node-activity-server";
+
+var mqlightServiceName = "mqlight";
+
+var mqlight = require('mqlight');
+
+/*
+ * Establish MQ credentials
+ */
+var opts = {};
+var mqlightService = {};
+if (process.env.VCAP_SERVICES) {
+  var services = JSON.parse(process.env.VCAP_SERVICES);
+  console.log( 'Running BlueMix');
+  if (services[ mqlightServiceName ] == null) {
+    throw 'Error - Check that app is bound to service';
+  }
+  mqlightService = services[mqlightServiceName][0];
+  opts.service = mqlightService.credentials.connectionLookupURI;
+  opts.user = mqlightService.credentials.username;
+  opts.password = mqlightService.credentials.password;
+} else {
+  opts.service = 'amqp://localhost:5672';
+}
+
+/*
+ * Create our MQ Light client
+ * If we are not running in Bluemix, then default to a local MQ Light connection  
+ */
+var mqlightSubInitialised = false;
+var mqlightClient = mqlight.createClient(opts, function(err) {
+  if (err) {
+    console.error('Connection to ' + opts.service + ' using client-id ' + mqlightClient.id + ' failed: ' + err);
+  } else {
+    console.log('Connected to ' + opts.service + ' using client-id ' + mqlightClient.id);
+  }
+  /*
+   * Create our subscription
+   */
+  mqlightClient.on('message', processBackendMessage);
+  mqlightClient.subscribe(SUBSCRIBE_TOPIC, SHARE_ID, 
+    {credit : 1,
+      autoConfirm : false,
+      qos : 1}, function(err) {
+        if (err) console.error("Failed to subscribe: " + err); 
+        else {
+          console.log("Subscribed");
+          mqlightSubInitialised = true;
+        }
+      });
+});
+
+
 //const auth = require('basic-auth');
 const express = require('express');
 //const cfenv = require('cfenv');
@@ -19,7 +79,10 @@ var dbCredentials = {
 
 var lastCredsUsed = '';
 
-	
+var savedRes;
+var savedResponseData;
+var savedI;
+
 function initDBConnection() {
 	
 	if (process.env.VCAP_SERVICES) {
@@ -117,7 +180,7 @@ var corsOptions = {
 	
 app.get("/api/activities", cors(corsOptionsDelegate), function(req, res, next) {
 // app.get("/api/activities", cors(corsOptions), function(req, res, next) {
-
+	
 	/*
 	var responseData = { 
 			total_rows: 3,
@@ -173,7 +236,19 @@ app.get("/api/activities", cors(corsOptionsDelegate), function(req, res, next) {
 							i++;
 							if(i >= len) {
 								console.log('ending response...');
-								res.send(responseData);
+								// Talk to back end here, or, set flag that one is done and check for both down
+							    var msgData = {
+							    	"message" : "This is a message from the Activity Server",
+							    	"activityserver" : "Node.js: " + mqlightClient.id
+							    };
+							    console.log("Sending message: " + JSON.stringify(msgData));
+							    mqlightClient.send(PUBLISH_TOPIC, msgData, {
+							    	    ttl: 60*60*1000 /* 1 hour */
+							    });							
+//								res.send(responseData);
+							    savedResponseData = responseData;
+							    savedRes = res;
+							    savedI = i;
 							}
 						} else {
 							console.log(err);
@@ -205,6 +280,30 @@ app.get("/", function(req, res) {
 		result: imAliveMessage
 	});
 });
+
+
+function processBackendMessage(data, delivery) {
+	  try {
+	    data = JSON.parse(data);
+	    console.log("Received response: " + JSON.stringify(data));
+	  } catch (e) {
+	    // Expected if we're receiving a Javascript object
+	  }
+//	  heldMsg = {"data" : data, "delivery" : delivery};
+	  if ( savedRes ) {
+		  // lets try to complete the initial request
+			savedResponseData.rows.push({});
+			savedResponseData.rows[savedI].id = "Backend Work";
+			savedResponseData.rows[savedI].description = "Work from activity backend server";
+			savedResponseData.rows[savedI].points = 100;
+			msg.delivery.message.confirmDelivery();
+			savedRes.send(savedResponseData);			
+	  } else {
+		  // not my message to send back
+		  console.log("Not my message: " + mqlightClient.id);
+	  }	  
+}
+
 
 
 initDBConnection();
