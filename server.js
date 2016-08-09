@@ -79,9 +79,9 @@ var dbCredentials = {
 
 var lastCredsUsed = '';
 
-var savedRes;
+var savedRes = {};
 var savedResponseData = {};
-var savedI;
+var savedI = 0;
 
 function initDBConnection() {
 	
@@ -290,19 +290,21 @@ function processBackendMessage(data, delivery) {
 	    // Expected if we're receiving a Javascript object
 	  }
 //	  heldMsg = {"data" : data, "delivery" : delivery};
-	  if ( savedRes ) {
+	  if ( savedI !== 0 ) {
 		  // lets try to complete the initial request
+		    console.log('saved i = ' + savedI);
 			savedResponseData.rows.push({});
 			savedResponseData.rows[savedI].id = "Backend Work";
 			savedResponseData.rows[savedI].description = "Work from activity backend server";
 			savedResponseData.rows[savedI].points = 100;
 //			msg.delivery.message.confirmDelivery();
+			console.log('confirming received message' + mqlightClient.id);
 			delivery.message.confirmDelivery();
-			console.log('ending initial request response...' + mqlightClient.id);
+			console.log('sending data back to front end' + mqlightClient.id);
 			savedRes.send(savedResponseData);	
 			// clear saved
 			savedI = 0;
-			savedRes = '';
+			savedRes = {};
 			saveResponseData = {};		
 	  } else {
 		  // not my message to send back
