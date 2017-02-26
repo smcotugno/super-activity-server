@@ -1,6 +1,6 @@
 applications:
-- name: super-activity-server
-  host: super-activity-server
+- name: super-activity-server-demo
+  host: super-activity-server-demo
   domain: mybluemix.net
   memory: 128M
   disk_quota: 256M
